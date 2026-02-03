@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Suivi Maintenance Bornes</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" defer></script>
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <header class="page-header">
+      <div>
+        <h1>Suivi des contrats &amp; maintenances</h1>
+        <p>
+          Importez vos classeurs Excel (2020 → 2026) pour consolider les sites, vérifier les
+          échéances contractuelles et planifier les maintenances.
+        </p>
+      </div>
+      <label class="upload">
+        <span>Importer vos fichiers Excel</span>
+        <input id="file-input" type="file" accept=".xlsx,.xls" multiple />
+      </label>
+    </header>
+
+    <section class="config">
+      <h2>Paramètres de colonne</h2>
+      <div class="config-grid">
+        <label>
+          Colonne Région
+          <input id="region-col" value="T" />
+        </label>
+        <label>
+          Colonne Type de bornes
+          <input id="bornes-type-col" value="I" />
+        </label>
+        <label>
+          Colonne Adresse (lien Google Maps)
+          <input id="address-col" value="E" />
+        </label>
+      </div>
+      <p class="hint">
+        Ajustez ces colonnes si vos fichiers utilisent des lettres différentes pour la région ou l’adresse.
+      </p>
+    </section>
+
+    <nav class="tabs">
+      <button class="tab active" data-tab="dashboard">Tableau de bord</button>
+      <button class="tab" data-tab="sites">Liste des sites</button>
+      <button class="tab" data-tab="clients">Infos clients</button>
+      <button class="tab" data-tab="bornes">Infos bornes</button>
+      <button class="tab" data-tab="extras">Infos devis &amp; affaires</button>
+    </nav>
+
+    <main>
+      <section id="dashboard" class="tab-panel active">
+        <div class="cards" id="summary-cards"></div>
+        <div class="charts">
+          <div class="chart-card">
+            <h3>Bornes posées par région</h3>
+            <canvas id="region-chart"></canvas>
+          </div>
+          <div class="chart-card">
+            <h3>Types de bornes</h3>
+            <canvas id="type-chart"></canvas>
+          </div>
+          <div class="chart-card">
+            <h3>Évolution des poses de bornes</h3>
+            <canvas id="year-chart"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <section id="sites" class="tab-panel">
+        <div class="filters">
+          <label>
+            Filtre maintenance
+            <select id="maintenance-filter">
+              <option value="all">Toutes</option>
+              <option value="oui">Maintenance (R = Oui)</option>
+              <option value="non">Sans maintenance (R = Non)</option>
+            </select>
+          </label>
+          <label>
+            Filtre contrat
+            <select id="contract-filter">
+              <option value="all">Tous</option>
+              <option value="en_cours">Contrat en cours</option>
+              <option value="reconduction">Reconduction à réaliser</option>
+              <option value="termine">Terminé</option>
+              <option value="depasse">Dépassé</option>
+            </select>
+          </label>
+          <label>
+            Filtre maintenance à faire
+            <select id="todo-filter">
+              <option value="all">Tous</option>
+              <option value="todo">Maintenance à faire</option>
+              <option value="done">Maintenance réalisée</option>
+            </select>
+          </label>
+        </div>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Site</th>
+                <th>Adresse</th>
+                <th>Maintenance</th>
+                <th>Statut contrat</th>
+                <th>Maintenance à faire (ligne)</th>
+                <th>Retard</th>
+                <th>Bornes</th>
+              </tr>
+            </thead>
+            <tbody id="sites-table"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="clients" class="tab-panel">
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Interlocuteur</th>
+                <th>Site</th>
+                <th>Adresse</th>
+                <th>Maintenance</th>
+              </tr>
+            </thead>
+            <tbody id="clients-table"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="bornes" class="tab-panel">
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Site</th>
+                <th>Bornes (colonne I)</th>
+                <th>Marque / Série (colonne H)</th>
+                <th>Maintenance</th>
+              </tr>
+            </thead>
+            <tbody id="bornes-table"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="extras" class="tab-panel">
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>N° Devis</th>
+                <th>N° d'affaire</th>
+                <th>Date affaire</th>
+                <th>Date fin chantier</th>
+                <th>Descriptif</th>
+                <th>Facture</th>
+                <th>Affaire</th>
+              </tr>
+            </thead>
+            <tbody id="extras-table"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <template id="empty-state">
+      <div class="empty">
+        <p>Aucune donnée importée. Sélectionnez vos fichiers Excel pour commencer.</p>
+      </div>
+    </template>
+  </body>
+</html>
