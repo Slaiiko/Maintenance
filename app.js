@@ -126,7 +126,7 @@ function getContractStatus(row) {
   const diffYears = (today - startDate) / (1000 * 60 * 60 * 24 * 365.25);
 
   if (diffYears > 5) return 'Dépassé';
-  if (diffYears >= 3) return 'Reconduction';
+  if (diffYears >= 3 && diffYears <= 5) return 'Reconduction';
 
   const maintenanceL = getColumnValue(row, COLUMN_MAP.maintenanceL);
   const maintenanceM = getColumnValue(row, COLUMN_MAP.maintenanceM);
@@ -179,16 +179,20 @@ function isMaintenanceDelay(row) {
 }
 
 function parseBornesCount(value) {
-  const raw = normalizeString(value);
+  const raw = normalizeString(value).toLowerCase();
   if (!raw) return 0;
-  const matches = [...raw.matchAll(/(\d+)\s*x/gi)];
-  if (matches.length) {
-    return matches.reduce((sum, match) => sum + Number(match[1]), 0);
+
+  const compact = raw.replace(/\s+/g, '');
+  const quantityMatches = [...compact.matchAll(/(\d+)\s*[x×]/g)];
+  if (quantityMatches.length) {
+    return quantityMatches.reduce((sum, match) => sum + Number(match[1]), 0);
   }
-  const numbers = raw.match(/\d+(?:[\.,]\d+)?/g);
-  if (numbers && numbers.length) {
-    return numbers.reduce((sum, num) => sum + Number(num.replace(',', '.')), 0);
-  }
+
+  if (compact.includes('double')) return 2;
+  if (compact.includes('simple')) return 1;
+
+  if (compact.includes('kw') || compact.match(/\d+(?:[.,]\d+)?/)) return 1;
+
   return 1;
 }
 
@@ -197,11 +201,14 @@ function normalizeTypeLabel(value) {
   if (!raw) return 'Non renseigné';
 
   const compact = raw.replace(/\s+/g, '');
+  const xMatch = compact.match(/(\d+)\s*[x×]\s*(\d+(?:[.,]\d+)?)/);
+  if (xMatch) return `${xMatch[1]}x${xMatch[2].replace(',', '.')}`;
+
   const kwMatch = compact.match(/(\d+(?:[.,]\d+)?)\s*kw/);
   if (kwMatch) return `${kwMatch[1].replace(',', '.')} kW`;
 
-  const xMatch = compact.match(/(\d+)\s*[x×]\s*(\d+(?:[.,]\d+)?)/);
-  if (xMatch) return `${xMatch[1]}x${xMatch[2].replace(',', '.')}`;
+  if (compact.includes('double')) return 'Double';
+  if (compact.includes('simple')) return 'Simple';
 
   const powerMatch = compact.match(/(\d+(?:[.,]\d+)?)/);
   if (powerMatch) return `${powerMatch[1].replace(',', '.')} kW`;
