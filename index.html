@@ -24,33 +24,9 @@
       </label>
     </header>
 
-    <section class="config">
-      <h2>Paramètres de colonne</h2>
-      <div class="config-grid">
-        <label>
-          Colonne Région
-          <input id="region-col" value="T" />
-        </label>
-        <label>
-          Colonne Type de bornes
-          <input id="bornes-type-col" value="I" />
-        </label>
-        <label>
-          Colonne Adresse (lien Google Maps)
-          <input id="address-col" value="E" />
-        </label>
-      </div>
-      <p class="hint">
-        Ajustez ces colonnes si vos fichiers utilisent des lettres différentes pour la région ou l’adresse.
-      </p>
-    </section>
-
     <nav class="tabs">
       <button class="tab active" data-tab="dashboard">Tableau de bord</button>
       <button class="tab" data-tab="sites">Liste des sites</button>
-      <button class="tab" data-tab="clients">Infos clients</button>
-      <button class="tab" data-tab="bornes">Infos bornes</button>
-      <button class="tab" data-tab="extras">Infos devis &amp; affaires</button>
     </nav>
 
     <main>
@@ -128,6 +104,7 @@
           <div class="detail-tabs">
             <button class="detail-tab active" data-detail-tab="detail-clients">Infos clients</button>
             <button class="detail-tab" data-detail-tab="detail-bornes">Infos bornes</button>
+            <button class="detail-tab" data-detail-tab="detail-contract">Contrat &amp; maintenance</button>
             <button class="detail-tab" data-detail-tab="detail-extras">Infos devis &amp; affaires</button>
           </div>
           <div class="detail-content">
@@ -152,6 +129,22 @@
                 <div>
                   <dt>Marque / Série</dt>
                   <dd id="detail-marque">-</dd>
+                </div>
+              </dl>
+            </div>
+            <div id="detail-contract" class="detail-panel-content">
+              <dl>
+                <div>
+                  <dt>Statut contrat</dt>
+                  <dd id="detail-contract-status">-</dd>
+                </div>
+                <div>
+                  <dt>Maintenance à faire (ligne)</dt>
+                  <dd id="detail-todo">-</dd>
+                </div>
+                <div>
+                  <dt>Retard</dt>
+                  <dd id="detail-delay">-</dd>
                 </div>
               </dl>
             </div>
@@ -188,57 +181,6 @@
               </dl>
             </div>
           </div>
-        </div>
-      </section>
-
-      <section id="clients" class="tab-panel">
-        <div class="table-wrapper">
-          <table>
-            <thead>
-              <tr>
-                <th>Interlocuteur</th>
-                <th>Site</th>
-                <th>Adresse</th>
-                <th>Maintenance</th>
-              </tr>
-            </thead>
-            <tbody id="clients-table"></tbody>
-          </table>
-        </div>
-      </section>
-
-      <section id="bornes" class="tab-panel">
-        <div class="table-wrapper">
-          <table>
-            <thead>
-              <tr>
-                <th>Site</th>
-                <th>Bornes (colonne I)</th>
-                <th>Marque / Série (colonne H)</th>
-                <th>Maintenance</th>
-              </tr>
-            </thead>
-            <tbody id="bornes-table"></tbody>
-          </table>
-        </div>
-      </section>
-
-      <section id="extras" class="tab-panel">
-        <div class="table-wrapper">
-          <table>
-            <thead>
-              <tr>
-                <th>N° Devis</th>
-                <th>N° d'affaire</th>
-                <th>Date affaire</th>
-                <th>Date fin chantier</th>
-                <th>Descriptif</th>
-                <th>Facture</th>
-                <th>Affaire</th>
-              </tr>
-            </thead>
-            <tbody id="extras-table"></tbody>
-          </table>
         </div>
       </section>
     </main>

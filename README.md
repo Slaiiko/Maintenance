@@ -25,4 +25,4 @@ python -m http.server 8000
 - D : Site
 - E : Adresse (avec lien Google Maps)
 
-Les colonnes de région et de type de bornes peuvent être ajustées dans l'interface.
+La colonne de région est attendue en T (modifiable dans le code si besoin).

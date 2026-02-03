@@ -49,40 +49,6 @@ body {
   display: none;
 }
 
-.config {
-  background: #fff;
-  padding: 24px 48px 16px;
-  border-bottom: 1px solid #e5e7eb;
-}
-
-.config h2 {
-  margin-top: 0;
-}
-
-.config-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 16px;
-}
-
-.config-grid label {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  font-weight: 600;
-}
-
-.config-grid input {
-  padding: 8px 12px;
-  border-radius: 8px;
-  border: 1px solid #d1d5db;
-}
-
-.hint {
-  font-size: 0.9rem;
-  color: #6b7280;
-}
-
 .tabs {
   display: flex;
   gap: 12px;
@@ -294,8 +260,7 @@ th {
   }
 
   main,
-  .tabs,
-  .config {
+  .tabs {
     padding: 20px;
   }
 }

@@ -1,12 +1,6 @@
 const fileInput = document.getElementById('file-input');
-const regionColInput = document.getElementById('region-col');
-const bornesTypeColInput = document.getElementById('bornes-type-col');
-const addressColInput = document.getElementById('address-col');
 const summaryCards = document.getElementById('summary-cards');
 const sitesTable = document.getElementById('sites-table');
-const clientsTable = document.getElementById('clients-table');
-const bornesTable = document.getElementById('bornes-table');
-const extrasTable = document.getElementById('extras-table');
 const maintenanceFilter = document.getElementById('maintenance-filter');
 const contractFilter = document.getElementById('contract-filter');
 const todoFilter = document.getElementById('todo-filter');
@@ -18,6 +12,9 @@ const detailInterlocuteur = document.getElementById('detail-interlocuteur');
 const detailAddressLink = document.getElementById('detail-address-link');
 const detailBornes = document.getElementById('detail-bornes');
 const detailMarque = document.getElementById('detail-marque');
+const detailContractStatus = document.getElementById('detail-contract-status');
+const detailTodo = document.getElementById('detail-todo');
+const detailDelay = document.getElementById('detail-delay');
 const detailDevis = document.getElementById('detail-devis');
 const detailAffaire = document.getElementById('detail-affaire');
 const detailDateAffaire = document.getElementById('detail-date-affaire');
@@ -76,6 +73,8 @@ const COLUMN_MAP = {
   siteMaintenance: 'R',
 };
 
+const REGION_COLUMN = 'T';
+
 let allRows = [];
 
 function normalizeString(value) {
@@ -101,13 +100,6 @@ function isMaintenanceNon(value) {
 
 function isAPlanifier(value) {
   return normalizeString(value).toLowerCase() === 'a planifier';
-}
-
-function isValidDate(value) {
-  if (!value) return false;
-  if (value instanceof Date) return !Number.isNaN(value.getTime());
-  const parsed = new Date(value);
-  return !Number.isNaN(parsed.getTime());
 }
 
 function parseDate(value) {
@@ -201,14 +193,24 @@ function parseBornesCount(value) {
 }
 
 function normalizeTypeLabel(value) {
-  const raw = normalizeString(value);
+  const raw = normalizeString(value).toLowerCase();
   if (!raw) return 'Non renseigné';
+
+  const compact = raw.replace(/\s+/g, '');
+  const kwMatch = compact.match(/(\d+(?:[.,]\d+)?)\s*kw/);
+  if (kwMatch) return `${kwMatch[1].replace(',', '.')} kW`;
+
+  const xMatch = compact.match(/(\d+)\s*[x×]\s*(\d+(?:[.,]\d+)?)/);
+  if (xMatch) return `${xMatch[1]}x${xMatch[2].replace(',', '.')}`;
+
+  const powerMatch = compact.match(/(\d+(?:[.,]\d+)?)/);
+  if (powerMatch) return `${powerMatch[1].replace(',', '.')} kW`;
+
   return raw;
 }
 
 function rowToDisplay(row) {
-  const addressLetter = addressColInput.value.trim().toUpperCase() || COLUMN_MAP.adresse;
-  const addressValue = getColumnValue(row, addressLetter);
+  const addressValue = getColumnValue(row, COLUMN_MAP.adresse);
   const addressLink = addressValue
     ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addressValue)}`
     : '';
@@ -238,9 +240,6 @@ function renderEmptyState() {
   const template = document.getElementById('empty-state');
   summaryCards.appendChild(template.content.cloneNode(true));
   sitesTable.innerHTML = '';
-  clientsTable.innerHTML = '';
-  bornesTable.innerHTML = '';
-  extrasTable.innerHTML = '';
 
   Object.values(charts).forEach((chart) => {
     if (chart) chart.destroy();
@@ -347,10 +346,6 @@ function renderTables(rows) {
   });
 
   sitesTable.innerHTML = '';
-  clientsTable.innerHTML = '';
-  bornesTable.innerHTML = '';
-  extrasTable.innerHTML = '';
-
   filteredRows.forEach((row) => {
     const display = rowToDisplay(row);
 
@@ -369,36 +364,6 @@ function renderTables(rows) {
       <td>${display.bornes}</td>
     `;
     sitesTable.appendChild(siteRow);
-
-    const clientRow = document.createElement('tr');
-    clientRow.innerHTML = `
-      <td>${display.interlocuteur}</td>
-      <td>${display.site}</td>
-      <td>${display.addressLink ? `<a href="${display.addressLink}" target="_blank">${display.addressValue}</a>` : ''}</td>
-      <td>${display.maintenance}</td>
-    `;
-    clientsTable.appendChild(clientRow);
-
-    const borneRow = document.createElement('tr');
-    borneRow.innerHTML = `
-      <td>${display.site}</td>
-      <td>${display.bornes}</td>
-      <td>${display.marque}</td>
-      <td>${display.maintenance}</td>
-    `;
-    bornesTable.appendChild(borneRow);
-
-    const extraRow = document.createElement('tr');
-    extraRow.innerHTML = `
-      <td>${display.devis}</td>
-      <td>${display.affaire}</td>
-      <td>${display.dateAffaire}</td>
-      <td>${display.dateFin}</td>
-      <td>${display.descriptif}</td>
-      <td>${display.facture}</td>
-      <td>${display.affaireRef}</td>
-    `;
-    extrasTable.appendChild(extraRow);
   });
 }
 
@@ -412,6 +377,9 @@ function setSiteDetail(display) {
   detailInterlocuteur.textContent = display.interlocuteur || '-';
   detailBornes.textContent = display.bornes || '-';
   detailMarque.textContent = display.marque || '-';
+  detailContractStatus.textContent = display.contractStatus || '-';
+  detailTodo.textContent = String(display.todo ?? '-');
+  detailDelay.textContent = display.delay || '-';
   detailDevis.textContent = display.devis || '-';
   detailAffaire.textContent = display.affaire || '-';
   detailDateAffaire.textContent = display.dateAffaire || '-';
@@ -430,9 +398,6 @@ function setSiteDetail(display) {
 }
 
 function computeData(rows) {
-  const regionColumn = regionColInput.value.trim().toUpperCase() || 'T';
-  const typeColumn = bornesTypeColInput.value.trim().toUpperCase() || COLUMN_MAP.bornes;
-
   let maintenanceOui = 0;
   let maintenanceNon = 0;
   let maintenanceTodoPerLine = 0;
@@ -467,10 +432,10 @@ function computeData(rows) {
     const bornesValue = getColumnValue(row, COLUMN_MAP.bornes);
     totalBornes += parseBornesCount(bornesValue);
 
-    const region = normalizeString(getColumnValue(row, regionColumn)) || 'Non renseigné';
+    const region = normalizeString(getColumnValue(row, REGION_COLUMN)) || 'Non renseigné';
     regionCounts[region] = (regionCounts[region] || 0) + parseBornesCount(bornesValue);
 
-    const typeLabel = normalizeTypeLabel(getColumnValue(row, typeColumn));
+    const typeLabel = normalizeTypeLabel(getColumnValue(row, COLUMN_MAP.bornes));
     typeCounts[typeLabel] = (typeCounts[typeLabel] || 0) + 1;
 
     const yearDate = parseDate(getColumnValue(row, COLUMN_MAP.dateAffaire)) ||
@@ -551,7 +516,7 @@ fileInput.addEventListener('change', (event) => {
   handleFiles(event.target.files);
 });
 
-[regionColInput, bornesTypeColInput, addressColInput, maintenanceFilter, contractFilter, todoFilter].forEach((input) => {
+[maintenanceFilter, contractFilter, todoFilter].forEach((input) => {
   input.addEventListener('change', () => updateView(allRows));
 });
 
