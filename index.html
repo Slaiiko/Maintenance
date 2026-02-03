@@ -117,6 +117,78 @@
             <tbody id="sites-table"></tbody>
           </table>
         </div>
+        <div class="detail-panel" id="site-detail-panel">
+          <div class="detail-header">
+            <div>
+              <h3 id="detail-site-title">Sélectionnez un site</h3>
+              <p id="detail-site-address">Cliquez sur une ligne pour afficher le détail.</p>
+            </div>
+            <span class="badge" id="detail-maintenance-badge">Maintenance</span>
+          </div>
+          <div class="detail-tabs">
+            <button class="detail-tab active" data-detail-tab="detail-clients">Infos clients</button>
+            <button class="detail-tab" data-detail-tab="detail-bornes">Infos bornes</button>
+            <button class="detail-tab" data-detail-tab="detail-extras">Infos devis &amp; affaires</button>
+          </div>
+          <div class="detail-content">
+            <div id="detail-clients" class="detail-panel-content active">
+              <dl>
+                <div>
+                  <dt>Interlocuteur</dt>
+                  <dd id="detail-interlocuteur">-</dd>
+                </div>
+                <div>
+                  <dt>Adresse</dt>
+                  <dd id="detail-address-link">-</dd>
+                </div>
+              </dl>
+            </div>
+            <div id="detail-bornes" class="detail-panel-content">
+              <dl>
+                <div>
+                  <dt>Bornes installées</dt>
+                  <dd id="detail-bornes">-</dd>
+                </div>
+                <div>
+                  <dt>Marque / Série</dt>
+                  <dd id="detail-marque">-</dd>
+                </div>
+              </dl>
+            </div>
+            <div id="detail-extras" class="detail-panel-content">
+              <dl>
+                <div>
+                  <dt>N° Devis</dt>
+                  <dd id="detail-devis">-</dd>
+                </div>
+                <div>
+                  <dt>N° d'affaire</dt>
+                  <dd id="detail-affaire">-</dd>
+                </div>
+                <div>
+                  <dt>Date affaire</dt>
+                  <dd id="detail-date-affaire">-</dd>
+                </div>
+                <div>
+                  <dt>Date fin chantier</dt>
+                  <dd id="detail-date-fin">-</dd>
+                </div>
+                <div>
+                  <dt>Descriptif</dt>
+                  <dd id="detail-descriptif">-</dd>
+                </div>
+                <div>
+                  <dt>Facture</dt>
+                  <dd id="detail-facture">-</dd>
+                </div>
+                <div>
+                  <dt>Affaire</dt>
+                  <dd id="detail-affaire-ref">-</dd>
+                </div>
+              </dl>
+            </div>
+          </div>
+        </div>
       </section>
 
       <section id="clients" class="tab-panel">

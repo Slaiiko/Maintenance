@@ -10,6 +10,21 @@ const extrasTable = document.getElementById('extras-table');
 const maintenanceFilter = document.getElementById('maintenance-filter');
 const contractFilter = document.getElementById('contract-filter');
 const todoFilter = document.getElementById('todo-filter');
+const detailPanel = document.getElementById('site-detail-panel');
+const detailSiteTitle = document.getElementById('detail-site-title');
+const detailSiteAddress = document.getElementById('detail-site-address');
+const detailMaintenanceBadge = document.getElementById('detail-maintenance-badge');
+const detailInterlocuteur = document.getElementById('detail-interlocuteur');
+const detailAddressLink = document.getElementById('detail-address-link');
+const detailBornes = document.getElementById('detail-bornes');
+const detailMarque = document.getElementById('detail-marque');
+const detailDevis = document.getElementById('detail-devis');
+const detailAffaire = document.getElementById('detail-affaire');
+const detailDateAffaire = document.getElementById('detail-date-affaire');
+const detailDateFin = document.getElementById('detail-date-fin');
+const detailDescriptif = document.getElementById('detail-descriptif');
+const detailFacture = document.getElementById('detail-facture');
+const detailAffaireRef = document.getElementById('detail-affaire-ref');
 
 const charts = {
   region: null,
@@ -19,6 +34,8 @@ const charts = {
 
 const tabs = document.querySelectorAll('.tab');
 const panels = document.querySelectorAll('.tab-panel');
+const detailTabs = document.querySelectorAll('.detail-tab');
+const detailPanels = document.querySelectorAll('.detail-panel-content');
 
 tabs.forEach((tab) => {
   tab.addEventListener('click', () => {
@@ -26,6 +43,15 @@ tabs.forEach((tab) => {
     panels.forEach((panel) => panel.classList.remove('active'));
     tab.classList.add('active');
     document.getElementById(tab.dataset.tab).classList.add('active');
+  });
+});
+
+detailTabs.forEach((tab) => {
+  tab.addEventListener('click', () => {
+    detailTabs.forEach((item) => item.classList.remove('active'));
+    detailPanels.forEach((panel) => panel.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById(tab.dataset.detailTab).classList.add('active');
   });
 });
 
@@ -329,6 +355,10 @@ function renderTables(rows) {
     const display = rowToDisplay(row);
 
     const siteRow = document.createElement('tr');
+    siteRow.addEventListener('click', () => {
+      setSiteDetail(display);
+      siteRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
     siteRow.innerHTML = `
       <td>${display.site}</td>
       <td>${display.addressLink ? `<a href="${display.addressLink}" target="_blank">${display.addressValue}</a>` : ''}</td>
@@ -370,6 +400,33 @@ function renderTables(rows) {
     `;
     extrasTable.appendChild(extraRow);
   });
+}
+
+function setSiteDetail(display) {
+  detailSiteTitle.textContent = display.site || 'Site non renseigné';
+  detailSiteAddress.textContent = display.addressValue || 'Adresse non renseignée';
+  detailMaintenanceBadge.textContent = display.maintenance === 'Oui' ? 'Maintenance' : 'Sans maintenance';
+  detailMaintenanceBadge.style.background = display.maintenance === 'Oui' ? '#e0f2fe' : '#fee2e2';
+  detailMaintenanceBadge.style.color = display.maintenance === 'Oui' ? '#0369a1' : '#b91c1c';
+
+  detailInterlocuteur.textContent = display.interlocuteur || '-';
+  detailBornes.textContent = display.bornes || '-';
+  detailMarque.textContent = display.marque || '-';
+  detailDevis.textContent = display.devis || '-';
+  detailAffaire.textContent = display.affaire || '-';
+  detailDateAffaire.textContent = display.dateAffaire || '-';
+  detailDateFin.textContent = display.dateFin || '-';
+  detailDescriptif.textContent = display.descriptif || '-';
+  detailFacture.textContent = display.facture || '-';
+  detailAffaireRef.textContent = display.affaireRef || '-';
+
+  if (display.addressLink) {
+    detailAddressLink.innerHTML = `<a href="${display.addressLink}" target="_blank">${display.addressValue}</a>`;
+  } else {
+    detailAddressLink.textContent = '-';
+  }
+
+  detailPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 function computeData(rows) {
@@ -459,6 +516,9 @@ function updateView(rows) {
   renderSummary(data);
   renderCharts(data);
   renderTables(rows);
+  if (rows.length) {
+    setSiteDetail(rowToDisplay(rows[0]));
+  }
 }
 
 function parseSheet(sheet) {
