@@ -1,5 +1,0 @@
-{
-  "name": "EV Contract Manager",
-  "description": "An interactive dashboard for analyzing EV charging station contracts, maintenance schedules, and renewals based on Excel imports.",
-  "requestFramePermissions": []
-}
